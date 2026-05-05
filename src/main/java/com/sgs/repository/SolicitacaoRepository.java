@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> {
 
-    @Query(value = "SELECT S.* FROM tb_solicitacao s " +
+    @Query(value = "SELECT s.* FROM tb_solicitacao s " +
             "INNER JOIN tb_solicitante sol ON s.solicitante_id = sol.id " +
             "WHERE sol.cpf_cnpj = :documento",
             nativeQuery = true)
