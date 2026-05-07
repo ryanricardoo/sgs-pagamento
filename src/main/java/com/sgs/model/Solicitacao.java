@@ -1,5 +1,6 @@
 package com.sgs.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -28,7 +29,8 @@ public class Solicitacao {
     private BigDecimal valor;
 
     @Column(name = "data_solicitacao", nullable = false)
-    private LocalDateTime dataSolicitacao = LocalDateTime.now();
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime dataSolicitacao;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
