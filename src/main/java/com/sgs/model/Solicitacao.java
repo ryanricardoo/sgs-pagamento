@@ -2,6 +2,9 @@ package com.sgs.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,17 +17,22 @@ public class Solicitacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "O solicitante é obrigatório")
     @ManyToOne
     @JoinColumn(name = "solicitante_id", nullable = false)
     private Solicitante solicitante;
 
+    @NotNull(message = "A categoria é obrigatória.")
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
+    @NotBlank(message = "Adicione uma descrição.")
     @Column(nullable = false, columnDefinition = "TEXT")
     private String descricao;
 
+    @NotNull(message = "O valor é obrigatório.")
+    @Positive(message = "O valor deve ser maior que zero.")
     @Column(nullable = false)
     private BigDecimal valor;
 

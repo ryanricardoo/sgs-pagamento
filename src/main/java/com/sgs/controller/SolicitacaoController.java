@@ -3,6 +3,7 @@ package com.sgs.controller;
 import com.sgs.model.Solicitacao;
 import com.sgs.model.StatusSolicitacao;
 import com.sgs.service.SolicitacaoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class SolicitacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<Solicitacao> criar(@RequestBody Solicitacao solicitacao){
+    public ResponseEntity<Solicitacao> criar(@Valid @RequestBody Solicitacao solicitacao){
         solicitacao.setId(null);
         Solicitacao novaSolicitacao = service.criar(solicitacao);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaSolicitacao);
