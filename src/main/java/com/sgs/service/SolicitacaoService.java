@@ -1,5 +1,6 @@
 package com.sgs.service;
 
+import com.sgs.exception.ResourceNotFoundException;
 import com.sgs.model.Solicitacao;
 import com.sgs.model.StatusSolicitacao;
 import com.sgs.repository.SolicitacaoRepository;
@@ -20,6 +21,12 @@ public class SolicitacaoService {
         return repository.buscarCpfCnpj(documento);
     }
 
+
+    public Solicitacao buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitação não encontrada com id: " + id));
+    }
+
     @Transactional
     public Solicitacao criar(Solicitacao solicitacao){
         solicitacao.setStatus(StatusSolicitacao.SOLICITADO);
@@ -29,16 +36,45 @@ public class SolicitacaoService {
 
     @Transactional
     public Solicitacao atualizarStatus(Long id, StatusSolicitacao novoStatus){
-        Solicitacao solicitacaoExistente = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Solicitação não encontrada com id: " + id));
+        Solicitacao solicitacao = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
 
-        if (solicitacaoExistente.getStatus().isFinal()){
-            throw new IllegalStateException("Não é possível alterar uma solicitação com status final: "
-                    + solicitacaoExistente.getStatus());
+        StatusSolicitacao statusAtual = solicitacao.getStatus();
+
+        if (statusAtual.isFinal()){
+            throw new IllegalStateException("Não é possível alterar uma solicitação com status: " + statusAtual);
+
         }
 
-        solicitacaoExistente.setStatus(novoStatus);
-        return repository.save(solicitacaoExistente);
+        boolean transicaoValida = false;
+        switch (statusAtual){
+            case SOLICITADO:
+                if (novoStatus == StatusSolicitacao.LIBERADO || novoStatus == StatusSolicitacao.REJEITADO){
+                    transicaoValida = true;
+                }
+                break;
+
+            case LIBERADO:
+                if (novoStatus == StatusSolicitacao.APROVADO || novoStatus == StatusSolicitacao.REJEITADO){
+                    transicaoValida = true;
+                }
+                break;
+
+            case APROVADO:
+                if (novoStatus == StatusSolicitacao.CANCELADO){
+                    transicaoValida = true;
+                }
+                break;
+
+            default:
+                transicaoValida = false;
+        }
+        if (!transicaoValida){
+            throw new IllegalStateException("Transição de status não permitida: " + statusAtual + " -> " + novoStatus);
+        }
+
+        solicitacao.setStatus(novoStatus);
+        return repository.save(solicitacao);
     }
 
 }

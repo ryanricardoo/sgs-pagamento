@@ -23,6 +23,12 @@ public class SolicitacaoController {
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Solicitacao> buscarPorId(@PathVariable Long id){
+        Solicitacao obj = service.buscarPorId(id);
+        return ResponseEntity.ok(obj);
+    }
+
     @PostMapping
     public ResponseEntity<Solicitacao> criar(@RequestBody Solicitacao solicitacao){
         solicitacao.setId(null);
