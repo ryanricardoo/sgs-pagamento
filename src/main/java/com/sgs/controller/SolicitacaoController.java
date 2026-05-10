@@ -1,5 +1,6 @@
 package com.sgs.controller;
 
+import com.sgs.dto.SolicitacaoDTO;
 import com.sgs.model.Solicitacao;
 import com.sgs.model.StatusSolicitacao;
 import com.sgs.service.SolicitacaoService;
@@ -25,9 +26,9 @@ public class SolicitacaoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Solicitacao> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<SolicitacaoDTO> buscarPorId(@PathVariable Long id){
         Solicitacao obj = service.buscarPorId(id);
-        return ResponseEntity.ok(obj);
+        return ResponseEntity.ok(new SolicitacaoDTO(obj));
     }
 
     @PostMapping
