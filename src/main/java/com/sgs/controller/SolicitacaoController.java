@@ -1,6 +1,7 @@
 package com.sgs.controller;
 
 import com.sgs.dto.SolicitacaoDTO;
+import com.sgs.dto.SolicitacaoRequestDTO;
 import com.sgs.model.Solicitacao;
 import com.sgs.model.StatusSolicitacao;
 import com.sgs.service.SolicitacaoService;
@@ -20,9 +21,10 @@ public class SolicitacaoController {
     private SolicitacaoService service;
 
     @GetMapping("/busca")
-    public ResponseEntity<List<Solicitacao>> buscarPorDocumento(@RequestParam String documento){
+    public ResponseEntity<List<SolicitacaoDTO>> buscarPorDocumento(@RequestParam String documento){
         List<Solicitacao> lista = service.buscarPorDocumento(documento);
-        return ResponseEntity.ok(lista);
+        List<SolicitacaoDTO> dtos = lista.stream().map(SolicitacaoDTO::new).toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
@@ -32,19 +34,22 @@ public class SolicitacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<Solicitacao> criar(@Valid @RequestBody Solicitacao solicitacao){
-        solicitacao.setId(null);
-        Solicitacao novaSolicitacao = service.criar(solicitacao);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaSolicitacao);
+    public ResponseEntity<SolicitacaoDTO> criar(@Valid @RequestBody SolicitacaoRequestDTO dto){
+        Solicitacao novaSolicitacao = new Solicitacao();
+        novaSolicitacao.setDescricao(dto.descricao());
+        novaSolicitacao.setValor(dto.valor());
+
+        Solicitacao salva = service.criar(novaSolicitacao, dto.solicitanteId(), dto.categoriaId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SolicitacaoDTO(salva));
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<Solicitacao> atualizarStatus(
+    public ResponseEntity<SolicitacaoDTO> atualizarStatus(
             @PathVariable Long id,
             @RequestParam StatusSolicitacao novoStatus){
 
         Solicitacao atualizada = service.atualizarStatus(id, novoStatus);
-        return ResponseEntity.ok(atualizada);
+        return ResponseEntity.ok(new SolicitacaoDTO(atualizada));
     }
 
 }

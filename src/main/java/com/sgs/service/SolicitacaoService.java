@@ -1,9 +1,13 @@
 package com.sgs.service;
 
 import com.sgs.exception.ResourceNotFoundException;
+import com.sgs.model.Categoria;
 import com.sgs.model.Solicitacao;
+import com.sgs.model.Solicitante;
 import com.sgs.model.StatusSolicitacao;
+import com.sgs.repository.CategoriaRepository;
 import com.sgs.repository.SolicitacaoRepository;
+import com.sgs.repository.SolicitanteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,12 @@ public class SolicitacaoService {
     @Autowired
     private SolicitacaoRepository repository;
 
+    @Autowired
+    private SolicitanteRepository solicitanteRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
     public List<Solicitacao> buscarPorDocumento(String documento){
         return repository.buscarCpfCnpj(documento);
     }
@@ -28,7 +38,13 @@ public class SolicitacaoService {
     }
 
     @Transactional
-    public Solicitacao criar(Solicitacao solicitacao){
+    public Solicitacao criar(Solicitacao solicitacao, Long solicitanteId, Long categoriaId){
+        Solicitante solicitante = solicitanteRepository.findById(solicitanteId)
+                        .orElseThrow(() -> new RuntimeException("Solicitante inexistente."));
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+                        .orElseThrow(() -> new RuntimeException("Categoria inexistente"));
+        solicitacao.setSolicitante(solicitante);
+        solicitacao.setCategoria(categoria);
         solicitacao.setStatus(StatusSolicitacao.SOLICITADO);
         solicitacao.setDataSolicitacao(LocalDateTime.now());
         return repository.save(solicitacao);
