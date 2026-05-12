@@ -2,9 +2,6 @@ package com.sgs.dto;
 
 import com.sgs.model.Solicitacao;
 import com.sgs.model.StatusSolicitacao;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
