@@ -15,10 +15,18 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
+@CrossOrigin(origins = "http://localhost:5173")
 public class SolicitacaoController {
 
     @Autowired
     private SolicitacaoService service;
+
+    @GetMapping
+    public ResponseEntity<List<SolicitacaoDTO>> listarTodos(){
+        List<Solicitacao> lista = service.listarTodos();
+        List<SolicitacaoDTO> dtos = lista.stream().map(SolicitacaoDTO::new).toList();
+        return ResponseEntity.ok(dtos);
+    }
 
     @GetMapping("/busca")
     public ResponseEntity<List<SolicitacaoDTO>> buscarPorDocumento(@RequestParam String documento){

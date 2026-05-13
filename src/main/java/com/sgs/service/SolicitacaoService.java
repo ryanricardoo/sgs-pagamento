@@ -32,6 +32,10 @@ public class SolicitacaoService {
     }
 
 
+    public List<Solicitacao> listarTodos() {
+        return repository.findAll();
+    }
+
     public Solicitacao buscarPorId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solicitação não encontrada com id: " + id));
