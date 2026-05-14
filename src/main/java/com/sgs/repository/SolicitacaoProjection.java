@@ -7,7 +7,7 @@ public interface SolicitacaoProjection {
     Long getId();
     String getNomeSolicitante();
     String getDocumento();
-    String getCategoria();
+    String getNomeCategoria();
     String getDescricao();
     BigDecimal getValor();
     LocalDateTime getDataSolicitacao();

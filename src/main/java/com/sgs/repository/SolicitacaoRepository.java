@@ -25,8 +25,8 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
             "INNER JOIN tb_categoria cat ON s.categoria_id = cat.id " +
             "WHERE (:status IS NULL OR s.status = :status) " +
             "AND (:categoriaId IS NULL OR cat.id = :categoriaId) " +
-            "AND (CAST(:dataInicio AS TIMESTAMP) IS NULL OR s.data_solicitacao >= :dataInicio) " +
-            "AND (CAST(:dataFim AS TIMESTAMP) IS NULL OR s.data_solicitacao <= :dataFim) ",
+            "AND (:dataInicio  IS NULL OR s.data_solicitacao >= :dataInicio) " +
+            "AND (:dataFim IS NULL OR s.data_solicitacao <= :dataFim) ",
             nativeQuery = true)
     List<SolicitacaoProjection> listarFiltros(
             @Param("status") String status,

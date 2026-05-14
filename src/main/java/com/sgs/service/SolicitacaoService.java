@@ -36,7 +36,7 @@ public class SolicitacaoService {
                         p.getId(),
                         p.getNomeSolicitante(),
                         p.getDocumento(),
-                        p.getCategoria(),
+                        p.getNomeCategoria(),
                         p.getDescricao(),
                         p.getValor(),
                         p.getDataSolicitacao(),
