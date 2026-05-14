@@ -7,10 +7,13 @@ import com.sgs.model.StatusSolicitacao;
 import com.sgs.service.SolicitacaoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -22,17 +25,13 @@ public class SolicitacaoController {
     private SolicitacaoService service;
 
     @GetMapping
-    public ResponseEntity<List<SolicitacaoDTO>> listarTodos(){
-        List<Solicitacao> lista = service.listarTodos();
-        List<SolicitacaoDTO> dtos = lista.stream().map(SolicitacaoDTO::new).toList();
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/busca")
-    public ResponseEntity<List<SolicitacaoDTO>> buscarPorDocumento(@RequestParam String documento){
-        List<Solicitacao> lista = service.buscarPorDocumento(documento);
-        List<SolicitacaoDTO> dtos = lista.stream().map(SolicitacaoDTO::new).toList();
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<List<SolicitacaoDTO>> listarTodos(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim){
+        List<SolicitacaoDTO> dtos = service.listarTodos(status, categoriaId, inicio, fim);
+                return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")

@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 public record SolicitacaoDTO(
     Long id,
     String nomeSolicitante,
+    String documento,
+    String nomeCategoria,
     String descricao,
     BigDecimal valor,
     LocalDateTime dataSolicitacao,
@@ -18,6 +20,8 @@ public record SolicitacaoDTO(
         this(
                 entity.getId(),
                 entity.getSolicitante().getNome(),
+                entity.getSolicitante().getCpfCnpj(),
+                entity.getCategoria().getNome(),
                 entity.getDescricao(),
                 entity.getValor(),
                 entity.getDataSolicitacao(),

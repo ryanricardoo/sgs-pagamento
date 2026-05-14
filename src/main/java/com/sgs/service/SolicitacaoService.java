@@ -1,5 +1,6 @@
 package com.sgs.service;
 
+import com.sgs.dto.SolicitacaoDTO;
 import com.sgs.exception.ResourceNotFoundException;
 import com.sgs.model.Categoria;
 import com.sgs.model.Solicitacao;
@@ -10,6 +11,7 @@ import com.sgs.repository.SolicitacaoRepository;
 import com.sgs.repository.SolicitanteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,13 +29,20 @@ public class SolicitacaoService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public List<Solicitacao> buscarPorDocumento(String documento){
-        return repository.buscarCpfCnpj(documento);
-    }
-
-
-    public List<Solicitacao> listarTodos() {
-        return repository.findAll();
+    public List<SolicitacaoDTO> listarTodos(String status, Long categoriaId, LocalDateTime inicio, LocalDateTime fim) {
+        return repository.listarFiltros(status, categoriaId, inicio, fim)
+                .stream()
+                .map(p -> new SolicitacaoDTO(
+                        p.getId(),
+                        p.getNomeSolicitante(),
+                        p.getDocumento(),
+                        p.getCategoria(),
+                        p.getDescricao(),
+                        p.getValor(),
+                        p.getDataSolicitacao(),
+                        StatusSolicitacao.valueOf(p.getStatus())
+                ))
+                        .toList();
     }
 
     public Solicitacao buscarPorId(Long id) {
