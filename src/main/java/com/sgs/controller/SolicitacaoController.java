@@ -2,6 +2,7 @@ package com.sgs.controller;
 
 import com.sgs.dto.SolicitacaoDTO;
 import com.sgs.dto.SolicitacaoRequestDTO;
+import com.sgs.dto.StatusRequestDTO;
 import com.sgs.model.Solicitacao;
 import com.sgs.model.StatusSolicitacao;
 import com.sgs.service.SolicitacaoService;
@@ -53,9 +54,9 @@ public class SolicitacaoController {
     @PutMapping("/{id}/status")
     public ResponseEntity<SolicitacaoDTO> atualizarStatus(
             @PathVariable Long id,
-            @RequestParam StatusSolicitacao novoStatus){
+            @RequestBody StatusRequestDTO request){
 
-        Solicitacao atualizada = service.atualizarStatus(id, novoStatus);
+        Solicitacao atualizada = service.atualizarStatus(id, request.novoStatus());
         return ResponseEntity.ok(new SolicitacaoDTO(atualizada));
     }
 

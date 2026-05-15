@@ -26,7 +26,8 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
             "WHERE (:status IS NULL OR s.status = :status) " +
             "AND (:categoriaId IS NULL OR cat.id = :categoriaId) " +
             "AND (:dataInicio  IS NULL OR s.data_solicitacao >= :dataInicio) " +
-            "AND (:dataFim IS NULL OR s.data_solicitacao <= :dataFim) ",
+            "AND (:dataFim IS NULL OR s.data_solicitacao <= :dataFim) " +
+            "ORDER BY s.id DESC",
             nativeQuery = true)
     List<SolicitacaoProjection> listarFiltros(
             @Param("status") String status,
