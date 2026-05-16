@@ -25,7 +25,7 @@ public class ResourceExceptionHandler {
     public ResponseEntity<StandardError> runtime(RuntimeException e, HttpServletRequest request) {
         StandardError err = new StandardError(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Error inesperado no servidor",
+                "Erro inesperado no servidor",
                 System.currentTimeMillis()
                 );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);

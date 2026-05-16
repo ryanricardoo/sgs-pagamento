@@ -27,7 +27,7 @@ public class Solicitacao {
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
-    @NotBlank(message = "Adicione uma descrição.")
+    @NotBlank(message = "A descrição é obrigatória.")
     @Column(nullable = false, columnDefinition = "TEXT")
     private String descricao;
 
