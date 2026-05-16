@@ -78,9 +78,11 @@ O Hibernate está configurado em modo de validação rigorosa corporativa:
 spring.jpa.hibernate.ddl-auto=validate
 ```
 Isso impede que o framework altere ou crie tabelas dinamicamente, exigindo que o banco de dados seja instanciado pelos scripts abaixo.
+
 <p align="center">
   <img src="./docs/images/der.svg" alt="DER" width="850">
 </p>
+
 ### Relacionamentos:
 * Solicitante (1:N) Solicitação
 * Categoria (1:N) Solicitação
