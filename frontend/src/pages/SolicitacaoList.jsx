@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api.js';
 
-// 1. Defina as cores fora do componente para organização
 const coresStatus = {
-  SOLICITADO: '#6c757d', // Cinza
-  LIBERADO: '#28a745',   // Verde
-  APROVADO: '#007bff',   // Azul
-  REJEITADO: '#dc3545',  // Vermelho
-  CANCELADO: '#ffc107'   // Amarelo
+  SOLICITADO: '#6c757d',
+  LIBERADO: '#28a745',
+  APROVADO: '#007bff',
+  REJEITADO: '#dc3545',
+  CANCELADO: '#ffc107'
 };
 
 function SolicitacaoList() {
   const [solicitacoes, setSolicitacoes] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [categoriaId, setCategoriaId] = useState('');
@@ -19,11 +19,15 @@ function SolicitacaoList() {
   const [dataFim, setDataFim] = useState('');
   const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState(null);
 
+
   useEffect(() => {
     carregarDados();
+
+    api.get('/api/categorias')
+      .then(res => setCategorias(res.data))
+      .catch(err => console.error("Erro ao carregar categorias para o filtro:", err));
   }, []);
 
-  // 2. Função de estilo padronizada
   const gerarEstiloBotao = (statusAlvo) => ({
     backgroundColor: coresStatus[statusAlvo] || '#6c757d',
     color: statusAlvo === 'CANCELADO' ? 'black' : 'white',
@@ -53,10 +57,23 @@ function SolicitacaoList() {
     }
   };
 
+  const limparFiltros = () => {
+    setStatus('');
+    setCategoriaId('');
+    setDataInicio('');
+    setDataFim('');
+
+    setTimeout(() => {
+      api.get('/api/solicitacoes')
+        .then(res => setSolicitacoes(res.data))
+        .catch(err => console.error(err));
+    }, 50);
+  };
+
   const atualizarStatus = async (id, novoStatus) => {
     try {
       await api.put(`/api/solicitacoes/${id}/status`, { novoStatus });
-      alert('Status atualizado com sucesso!');
+      alert('Status updated successfully!');
       carregarDados();
     } catch (error) {
       console.error(error);
@@ -68,7 +85,61 @@ function SolicitacaoList() {
     <div style={{ padding: '20px', fontFamily: 'Arial' }}>
       <h2>Lista de Solicitações - SGS Pagamento</h2>
 
-      {/* ... Filtros permanecem iguais ... */}
+
+      <div style={{
+        display: 'flex',
+        gap: '15px',
+        marginBottom: '20px',
+        padding: '15px',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px',
+        alignItems: 'flex-end',
+        flexWrap: 'wrap'
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontSize: '13px', fontWeight: 'bold' }}>Status:</label>
+          <select value={status} onChange={e => setStatus(e.target.value)} style={{ padding: '6px', borderRadius: '4px' }}>
+            <option value="">Todos os Status</option>
+            <option value="SOLICITADO">Solicitado</option>
+            <option value="LIBERADO">Liberado</option>
+            <option value="APROVADO">Aprovado</option>
+            <option value="REJEITADO">Rejeitado</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontSize: '13px', fontWeight: 'bold' }}>Categoria:</label>
+          <select value={categoriaId} onChange={e => setCategoriaId(e.target.value)} style={{ padding: '6px', borderRadius: '4px' }}>
+            <option value="">Todas as Categorias</option>
+            {categorias.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.nome}</option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontSize: '13px', fontWeight: 'bold' }}>Início Período:</label>
+          <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} style={{ padding: '5px', borderRadius: '4px' }} />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontSize: '13px', fontWeight: 'bold' }}>Fim Período:</label>
+          <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} style={{ padding: '5px', borderRadius: '4px' }} />
+        </div>
+
+        <button onClick={carregarDados} style={{
+          backgroundColor: '#007bff', color: 'white', padding: '7px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
+        }}>
+          Buscar
+        </button>
+
+        <button onClick={limparFiltros} style={{
+          backgroundColor: '#6c757d', color: 'white', padding: '7px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
+        }}>
+          Limpar
+        </button>
+      </div>
 
       <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead style={{ backgroundColor: '#e2e2e2' }}>
@@ -97,7 +168,7 @@ function SolicitacaoList() {
                 <td>
                   <span style={{
                     fontWeight: 'bold',
-                    color: coresStatus[s.status] || 'black' // AQUI USA A COR PADRONIZADA NO TEXTO
+                    color: coresStatus[s.status] || 'black'
                   }}>
                     {s.status}
                   </span>
@@ -144,7 +215,13 @@ function SolicitacaoList() {
       </table>
 
       {solicitacaoSelecionada && (
-        <div className="modal-detalhes">
+        <div style={{
+          marginTop: '20px',
+          padding: '15px',
+          backgroundColor: '#fff3cd',
+          border: '1px solid #ffeeba',
+          borderRadius: '4px'
+        }}>
            <h3>Detalhes da Solicitação #{solicitacaoSelecionada.id}</h3>
            <p><strong>Descrição:</strong> {solicitacaoSelecionada.descricao}</p>
            <p>
@@ -158,7 +235,7 @@ function SolicitacaoList() {
                })
              }
            </p>
-           <button onClick={() => setSolicitacaoSelecionada(null)}>Fechar</button>
+           <button onClick={() => setSolicitacaoSelecionada(null)} style={{ padding: '5px 10px', cursor: 'pointer' }}>Fechar</button>
         </div>
       )}
     </div>
