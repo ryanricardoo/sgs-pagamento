@@ -46,15 +46,15 @@ public class SolicitacaoService {
 
     public Solicitacao buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Solicitação não encontrada com id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     @Transactional
     public Solicitacao criar(Solicitacao solicitacao, Long solicitanteId, Long categoriaId){
         Solicitante solicitante = solicitanteRepository.findById(solicitanteId)
-                        .orElseThrow(() -> new RuntimeException("Solicitante inexistente."));
+                        .orElseThrow(() -> new ResourceNotFoundException("Solicitante inexistente."));
         Categoria categoria = categoriaRepository.findById(categoriaId)
-                        .orElseThrow(() -> new RuntimeException("Categoria inexistente"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoria inexistente"));
         solicitacao.setSolicitante(solicitante);
         solicitacao.setCategoria(categoria);
         solicitacao.setStatus(StatusSolicitacao.SOLICITADO);
